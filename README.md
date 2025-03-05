@@ -52,3 +52,6 @@ SwiftDataTest/
 ### 删除记录
 - 单个删除：右键点击记录，选择"删除"
 - 批量删除：选择多个记录，点击工具栏的"删除选中"按钮
+
+## 致谢
+感谢bilibili教程：[Swift编程小马的视频](https://www.bilibili.com/video/BV1Pp1oYsETk)
