@@ -12,6 +12,7 @@ struct HistoryView: View {
     @Query private var items: [Item]
     @State private var searchText = ""
     @State private var selection = Set<Item>()
+    @State private var itemToDelete: Item?
     
     @Environment(\.modelContext) private var modelContext
     
@@ -59,6 +60,16 @@ struct HistoryView: View {
                 }
             }
             .padding(.vertical, 8)
+            .contextMenu {
+                Button("删除", role: .destructive) {
+                    withAnimation {
+                        itemToDelete = item
+                    }
+                }
+            }
+            .overlay(
+                itemToDelete == item ? Color.red.opacity(0.2) : Color.clear
+            )
         }
         .searchable(text: $searchText, prompt: "搜索记录")
         .navigationTitle("历史记录")
@@ -69,6 +80,27 @@ struct HistoryView: View {
                 }
                 .disabled(selection.isEmpty)
             }
+        }
+        .alert("确认删除", isPresented: Binding(
+            get: { itemToDelete != nil },
+            set: { if !$0 { itemToDelete = nil } }
+        )) {
+            Button("删除", role: .destructive) {
+                if let item = itemToDelete {
+                    
+                }
+            }
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("您确定要删除这条记录吗？此操作无法撤销。")
+        }
+    }
+    
+    private func deleteItem(_ item: Item) {
+        withAnimation {
+            modelContext.delete(item)
+            // 如果该项在选中集合中，也移除它
+            selection.remove(item)
         }
     }
     
