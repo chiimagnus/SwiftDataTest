@@ -49,8 +49,8 @@ struct ContentView: View {
                 HistoryView()
             }
         }
-        .onChange(of: navigationCoordinator.currentView) { newValue in
-            selectedSidebarItem = newValue
+        .onChange(of: navigationCoordinator.currentView) {
+            selectedSidebarItem = navigationCoordinator.currentView
         }
     }
 }
