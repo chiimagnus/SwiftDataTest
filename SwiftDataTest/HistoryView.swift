@@ -12,6 +12,7 @@ struct HistoryView: View {
     @Query private var items: [Item]
     @State private var searchText = ""
     @State private var selection = Set<Item>()
+    @State private var itemToEdit: Item?
     
     @Environment(\.modelContext) private var modelContext
     
@@ -62,7 +63,10 @@ struct HistoryView: View {
             .contextMenu {
                 Button("删除", role: .destructive) {
                     modelContext.delete(item)
-                    // deleteItem(item)
+                }
+                
+                Button("编辑") {
+                    itemToEdit = item
                 }
             }
             .overlay(
@@ -71,15 +75,12 @@ struct HistoryView: View {
         }
         .searchable(text: $searchText, prompt: "搜索记录")
         .navigationTitle("历史记录")
+        .sheet(item: $itemToEdit) { item in
+            NavigationStack {
+                EditItemView(item: item)
+            }
+        }
     }
-    
-    // private func deleteItem(_ item: Item) {
-    //     withAnimation {
-    //         modelContext.delete(item)
-    //         // 如果该项在选中集合中，也移除它
-    //         selection.remove(item)
-    //     }
-    // }
 }
 
 #Preview {
