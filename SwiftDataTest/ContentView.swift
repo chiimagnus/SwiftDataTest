@@ -9,51 +9,49 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    @State private var showNewItem = false  // 添加状态变量控制 sheet 的显示
+    @State private var showHistory = false
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        NavigationStack {
+            VStack(spacing: 30) {
+                Text("SwiftData数据库教学项目")
+                    .font(.title)
+                    .bold()
+                Text("有两个功能：")
+                Text("1.新建记录")
+                Text("2.查看记录")
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
             .toolbar {
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: {
+                        showNewItem = true
+                    }) {
+                        Label("新建记录", systemImage: "plus")
                     }
+                    .keyboardShortcut("n", modifiers:[])  // 添加键盘快捷键
+                }
+                
+                ToolbarItem {
+                    Button(action: {
+                        showHistory = true
+                    }) {
+                        Label("历史记录", systemImage: "heart")
+                    }
+                    .keyboardShortcut("l", modifiers: [])
                 }
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+            .sheet(isPresented: $showNewItem) {
+                NewItemView()
+            }
+            .sheet(isPresented: $showHistory) {
+                HistoryView()
             }
         }
     }
 }
-
+    
+    
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
